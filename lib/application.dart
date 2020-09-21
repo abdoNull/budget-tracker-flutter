@@ -1,3 +1,4 @@
+import 'package:budget_tracker/routes.dart';
 import 'package:flutter/material.dart';
 
 class Application extends StatelessWidget {
@@ -10,8 +11,8 @@ class Application extends StatelessWidget {
         primarySwatch: Colors.teal
       ),
       
-   //   initialRoute: '/',
-  //    routes: null,
+     initialRoute: '/',
+     routes: routes,
     );
   }
 }
