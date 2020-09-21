@@ -1,3 +1,4 @@
+import 'package:budget_tracker/screens/home/widgets/menu.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -16,7 +17,7 @@ class HomeScreen extends StatelessWidget {
           )
         ],
       ),
-      drawer: Drawer(),
+      drawer: Menu(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[

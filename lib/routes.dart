@@ -1,9 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:budget_tracker/screens/index.dart';
 
 final routes = {
-  '/': (BuildContext context) => HomeScreen(),
-  '/accounts': (BuildContext context) => AccountsScreen(),
-  '/items': (BuildContext context) => ItemsScreens(),
-  '/types': (BuildContext context) => TypesScreen(),
+  '/': (context) => HomeScreen(),
+  AccountsScreen.routeName: (context) => AccountsScreen(),
+  ItemsScreen.routeName: (context) => ItemsScreen(),
+  TypesScreen.routeName: (context) => TypesScreen(),
 };
+
+// inErrorCase Try BuildContext 

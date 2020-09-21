@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class ItemsScreens extends StatelessWidget {
-
+class ItemsScreen extends StatelessWidget {
+ static const routeName = '/items-screen';
   @override
   Widget build(BuildContext context) {
     return Container(
