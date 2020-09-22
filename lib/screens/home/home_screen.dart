@@ -1,7 +1,10 @@
+import 'package:budget_tracker/screens/accounts/accounts_screen.dart';
 import 'package:budget_tracker/screens/home/widgets/menu.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
+    static const routeName = '/home-screen';
+
   @override
   Widget build(BuildContext context) {
     var amount = '1,203.00';
@@ -26,7 +29,7 @@ class HomeScreen extends StatelessWidget {
           ),
           Container(
             padding: EdgeInsets.only(bottom: 10),
-            height: MediaQuery.of(context).size.height - 196,
+            height: MediaQuery.of(context).size.height - 250,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -38,9 +41,9 @@ class HomeScreen extends StatelessWidget {
                   amount: 506,
                 ),
                 _BarLine(
-                  height: 400,
+                  height: 300,
                   label: 'Deposit',
-                  color: Colors.green,
+                  color: Colors.teal,
                   amount: 1709,
                 ),
               ],

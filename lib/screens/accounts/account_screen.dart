@@ -1,5 +1,4 @@
-import 'dart:js';
-
+import 'package:budget_tracker/screens/icons/icon_holder.dart';
 import 'package:budget_tracker/screens/icons/icons_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -26,33 +25,12 @@ class _AccountScreenState extends State<AccountScreen> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: <Widget>[
-              InkWell(
-                onTap: () async {
-                  var iconData = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => IconsScreen(),
-                    ),
-                  );
-                  setState(() {
-                    _newIcon = iconData;
-                  });
-                },
-                child: Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 2,
-                      color: Colors.blueGrey,
-                    ),
-                  ),
-                  child: Icon(
-                    _newIcon = _newIcon == null ? Icons.add : _newIcon,
-                    size: 60,
-                    color: Colors.blueGrey,
-                  ),
-                ),
+              //   IconHolder(newIcon: _newIcon),
+              IconHolder(
+                newIcon: _newIcon,
+                onIconChange: (IconData iconData) => setState(() {
+                  _newIcon = iconData;
+                }),
               ),
               TextFormField(
                 decoration: InputDecoration(

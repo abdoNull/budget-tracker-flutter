@@ -29,7 +29,7 @@ class Menu extends StatelessWidget {
                 title: 'Accounts',
                 color: color,
                 icon: Icons.account_balance,
-                onTap: () => _onNavigate(context, '/accounts')),
+                onTap: () => _onNavigate(context, AccountsScreen.routeName)),
             Divider(
               height: 20,
               color: Colors.black,
