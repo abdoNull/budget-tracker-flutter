@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:budget_tracker/models/models.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DbProvider {
@@ -12,6 +14,29 @@ class DbProvider {
     return _database;
   }
 
+  Future<int> createAccount(Account account) async {
+    final db = await database;
+    return await db.insert('Account', account.toMap());
+  }
+
+  Future<int> updateAccount(Account account) async {
+    final db = await database;
+    return await db.update(
+      'Account',
+      account.toMap(),
+      where: 'id = ?',
+      whereArgs: [account.id],
+    );
+  }
+
+  Future<List<Account>> getAllAccount() async {
+    final db = await database;
+    var res = await db.query('Account');
+    List<Account> list =
+        res.isNotEmpty ? res.map((a) => Account.fromMap(a)).toList() : [];
+     return list;
+  }
+
   void dispose() {
     _database?.close();
     _database = null;
@@ -20,9 +45,14 @@ class DbProvider {
   Future<Database> _initialize() async {
     Directory docDir = await getApplicationDocumentsDirectory();
     String path = join(docDir.path, 'budget_tracker');
-    Database db = await openDatabase(path, version: 1, onOpen: (db) {
-      print('Database Open');
-    },onCreate: _onCreate,);
+    Database db = await openDatabase(
+      path,
+      version: 1,
+      onOpen: (db) {
+        print('Database Open');
+      },
+      onCreate: _onCreate,
+    );
     return db;
   }
 
