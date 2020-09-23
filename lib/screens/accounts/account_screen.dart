@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class AccountScreen extends StatefulWidget {
   const AccountScreen({
     Key key,
-    @required this.account,
+    this.account,
   }) : super(key: key);
 
   final Account account;
@@ -81,7 +81,7 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               TextFormField(
                 initialValue:
-                    widget.account != null ? widget.account.balance : '',
+                    widget.account != null ? widget.account.balance.toString() : '',
                 decoration: InputDecoration(
                   labelText: 'Balance',
                 ),

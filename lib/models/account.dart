@@ -15,7 +15,7 @@ class Account {
   final int codePoint;
   final double balance;
 
- // IconData get iconData => IconHelper.createIconData(codePoint);
+   IconData get iconData => IconHelper.createIconData(codePoint);
 
   Map<String, dynamic> toMap() =>
       {'id': id, 'name': name, 'codePoint': codePoint, 'balance': balance};
