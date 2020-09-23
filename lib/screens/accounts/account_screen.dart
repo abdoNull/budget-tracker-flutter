@@ -1,5 +1,4 @@
 import 'package:budget_tracker/screens/icons/icon_holder.dart';
-import 'package:budget_tracker/screens/icons/icons_screen.dart';
 import 'package:flutter/material.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -28,9 +27,8 @@ class _AccountScreenState extends State<AccountScreen> {
               //   IconHolder(newIcon: _newIcon),
               IconHolder(
                 newIcon: _newIcon,
-                onIconChange: (IconData iconData) => setState(() {
-                  _newIcon = iconData;
-                }),
+                onIconChange: (IconData iconData) =>
+                    setState(() => _newIcon = iconData),
               ),
               TextFormField(
                 decoration: InputDecoration(

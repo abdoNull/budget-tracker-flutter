@@ -1,9 +1,10 @@
 import 'package:budget_tracker/screens/accounts/accounts_screen.dart';
 import 'package:budget_tracker/screens/home/widgets/menu.dart';
+import 'package:budget_tracker/screens/index.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-    static const routeName = '/home-screen';
+  static const routeName = '/home-screen';
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +22,43 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       drawer: Menu(),
+      // floatingActionButton: FloatingActionButton(
+      //   child: Icon(
+      //     Icons.add,
+      //     size: 60,
+      //   ),
+
+      //   onPressed: () => Navigator.push(
+      //     context,
+      //     MaterialPageRoute(builder: (_) => ItemScreen()),
+      //   ),
+      // ),
+      floatingActionButton: PopupMenuButton(
+        child: Icon(
+          Icons.add_circle,
+          size: 60,
+          color: Theme.of(context).primaryColor,
+        ),
+        itemBuilder: (_) => [
+          PopupMenuItem(
+            value: 1,
+            child: const Text('Deposit'),
+          ),
+          PopupMenuItem(
+            value: 2,
+            child: const Text('Withdraw'),
+          ),
+        ],
+        onSelected: (int value) => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ItemScreen(
+              isDeposit: value == 2,
+            ),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -28,8 +66,8 @@ class HomeScreen extends StatelessWidget {
             amount: amount,
           ),
           Container(
-            padding: EdgeInsets.only(bottom: 10),
-            height: MediaQuery.of(context).size.height - 250,
+            padding: EdgeInsets.only(bottom: 50),
+            height: MediaQuery.of(context).size.height - 200,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

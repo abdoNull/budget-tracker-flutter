@@ -6,7 +6,7 @@ class Menu extends StatelessWidget {
   Widget build(BuildContext context) {
     var color = Theme.of(context).primaryColor;
     return SizedBox(
-      width: 150,
+      width: 100,
       child: Drawer(
         child: Column(
           children: [
