@@ -27,7 +27,7 @@ class TypesScreen extends StatelessWidget {
         ],
       ),
       body: FutureBuilder(
-        future: dbProvider.getAllItemType(),
+        future: dbProvider.getAllItemTypes(),
         builder: (_, snaptshot) {
           if (!snaptshot.hasData)
             return Center(

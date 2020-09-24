@@ -48,9 +48,10 @@ class _AccountScreenState extends State<AccountScreen> {
               var account = Account.fromMap(_data);
               if (account.id == null)
                 await dbProvider.createAccount(account);
+                
               else
                 await dbProvider.updateAccount(account);
-
+              print("Pass the Condiction");
               Navigator.of(context).pop();
             },
           ),

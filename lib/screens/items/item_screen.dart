@@ -1,138 +1,160 @@
+import 'package:budget_tracker/database/db_provider.dart';
+import 'package:budget_tracker/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class ItemScreen extends StatefulWidget {
-  const ItemScreen({
-    Key key,
-    @required this.isDeposit,
-  }) : super(key: key);
-
+  ItemScreen({@required this.isDeposit});
   final bool isDeposit;
-
   @override
   _ItemScreenState createState() => _ItemScreenState();
 }
 
 class _ItemScreenState extends State<ItemScreen> {
-  Map<String, dynamic> _data;
+  Map<String, dynamic> _formData = Map<String, dynamic>();
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  //bool _isDeposit = true;
+  List<Account> _accounts = [];
+  List<ItemType> _types = [];
   DateTime _dateTime = DateTime.now();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _data['isDeposit'] = widget.isDeposit;
+    _formData['isDeposit'] = widget.isDeposit;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadDropdownData();
+  }
+
+  void _loadDropdownData() async {
+    var dbProvider = Provider.of<DbProvider>(context);
+    var accounts = await dbProvider.getAllAccount(); // Change this to Plurale
+    var types = await dbProvider.getAllItemTypes();
+
+    if (!mounted) return;
+
+    setState(() {
+      _accounts = accounts;
+      _types = types;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Item'),
-        actions: [
+        title: const Text('Item'),
+        actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),
             onPressed: () {
               if (!_formKey.currentState.validate()) return;
               _formKey.currentState.save();
+              var dbProvider = Provider.of<DbProvider>(context);
+              _formData['date'] = DateFormat('MM/dd/yyyy').format(_dateTime);
+              var item = Item.fromMap(_formData);
+              dbProvider.createItem(item);
               Navigator.of(context).pop();
             },
-          ),
+          )
         ],
       ),
       body: Form(
-          key: _formKey,
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(10.0),
           child: Column(
             children: <Widget>[
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                ),
+                decoration: InputDecoration(labelText: 'Description'),
                 validator: (String value) => value.isEmpty ? 'Required' : null,
-                onSaved: (String value) => _data['description'] = value,
+                onSaved: (String value) => _formData['description'] = value,
               ),
               TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Amount',
-                ),
+                decoration: InputDecoration(labelText: 'Amount'),
                 validator: (String value) {
                   if (value.isEmpty) return 'Required';
-                  if (double.tryParse(value) == null) return 'Invalid';
+                  if (double.tryParse(value) == null) return 'Invalid number';
                   return null;
                 },
-                onSaved: (String value) => _data['amount'] = value,
+                onSaved: (String value) =>
+                    _formData['amount'] = double.parse(value),
               ),
               Row(
-                children: [
-                  // Checkbox(
-                  //   value: _isDeposit,
-                  //   onChanged: (bool value) =>
-                  //       setState(() => _isDeposit = value),
-                  // ),
+                children: <Widget>[
                   Checkbox(
-                    value: _data['isDeposit'],
-                    onChanged: (bool value) =>
-                        setState(() => _data['isDeposit'] = value),
+                    value: _formData['isDeposit'],
+                    onChanged: (bool value) {
+                      setState(() {
+                        _formData['isDeposit'] = value;
+                      });
+                    },
                   ),
                   const Text('Is Deposit'),
                 ],
               ),
               Row(
-                children: [
+                children: <Widget>[
                   IconButton(
                     icon: Icon(Icons.date_range),
                     onPressed: () async {
                       var date = await showDatePicker(
                         context: context,
                         initialDate: _dateTime,
-                        firstDate: DateTime.now().add(Duration(days: -365)),
+                        firstDate: DateTime.now().add(
+                          Duration(days: -365),
+                        ),
                         lastDate: DateTime.now().add(Duration(days: 365)),
                       );
-                      if (date = null) return;
-                      setState(() => _dateTime = date);
+
+                      if (date == null) return;
+
+                      setState(() {
+                        _dateTime = date;
+                      });
                     },
                   ),
-                  Text(DateFormat('MM/dd/yyyy').format(_dateTime))
+                  Text(DateFormat('MM/dd/yyyy').format(_dateTime)),
                 ],
               ),
-              DropdownButtonFormField(
-                decoration: InputDecoration(
-                  labelText: 'Account',
-                ),
-                items: [
-                  DropdownMenuItem<int>(
-                    value: 1,
-                    child: const Text('Checking'),
-                  ),
-                  DropdownMenuItem<int>(
-                    value: 2,
-                    child: const Text('Credit Card'),
-                  ),
-                ],
-                onChanged: (int value) => _data['accountId'] == value,
+              DropdownButtonFormField<int>(
+                value: _formData['accountId'],
+                decoration: InputDecoration(labelText: 'Account'),
+                items: _accounts
+                    .map((a) => DropdownMenuItem<int>(
+                          value: a.id,
+                          child: Text(a.name),
+                        ))
+                    .toList(),
                 validator: (int value) => value == null ? 'Required' : null,
+                onChanged: (int value) {
+                  setState(() {
+                    _formData['accountId'] = value;
+                  });
+                },
               ),
-              DropdownButtonFormField(
-                decoration: InputDecoration(
-                  labelText: 'Type',
-                ),
-                items: [
-                  DropdownMenuItem<int>(
-                    value: 1,
-                    child: const Text('Rent'),
-                  ),
-                  DropdownMenuItem<int>(
-                    value: 2,
-                    child: const Text('Dinner'),
-                  ),
-                ],
-                onChanged: (int value) => _data['accountId'] == value,
+              DropdownButtonFormField<int>(
+                decoration: InputDecoration(labelText: 'Type'),
+                value: _formData['typeId'],
+                items: _types
+                    .map((t) =>
+                        DropdownMenuItem<int>(value: t.id, child: Text(t.name)))
+                    .toList(),
+                onChanged: (int value) {
+                  setState(() {
+                    _formData['typeId'] = value;
+                  });
+                },
                 validator: (int value) => value == null ? 'Required' : null,
-              ),
+              )
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
