@@ -34,7 +34,31 @@ class DbProvider {
     var res = await db.query('Account');
     List<Account> list =
         res.isNotEmpty ? res.map((a) => Account.fromMap(a)).toList() : [];
-     return list;
+    return list;
+  }
+
+  Future<int> createItemType(ItemType account) async {
+    final db = await database;
+    return await db.insert('ItemType', account.toMap());
+  }
+
+  Future<int> updateItemType(ItemType itemType) async {
+    final db = await database;
+    return await db.update(
+      'ItemType',
+      itemType.toMap(),
+      where: 'id = ?',
+      whereArgs: [itemType.id],
+    );
+  }
+
+  Future<List<Account>> getAllItemType() async {
+    final db = await database;
+    var result = await db.query('Account');
+    List<Account> list = result.isNotEmpty
+        ? result.map((a) => ItemType.fromMap(a)).toList()
+        : [];
+    return list;
   }
 
   void dispose() {
@@ -62,6 +86,11 @@ class DbProvider {
         "name TEXT,"
         "codePoint INTEGER,"
         "balance REAL"
+        ")");
+    await db.execute("CREATE TABLE ItemType("
+        "id INTEGER PRIMARY KEY,"
+        "name TEXT,"
+        "codePoint INTEGER,"
         ")");
   }
 }
