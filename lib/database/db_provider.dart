@@ -14,6 +14,8 @@ class DbProvider {
     return _database;
   }
 
+
+// Account Table
   Future<int> createAccount(Account account) async {
     final db = await database;
     return await db.insert('Account', account.toMap());
@@ -31,12 +33,14 @@ class DbProvider {
 
   Future<List<Account>> getAllAccount() async {
     final db = await database;
-    var res = await db.query('Account');
+    var result = await db.query('Account');
     List<Account> list =
-        res.isNotEmpty ? res.map((a) => Account.fromMap(a)).toList() : [];
+        result.isNotEmpty ? result.map((a) => Account.fromMap(a)).toList() : [];
     return list;
   }
 
+
+// ItemType Table
   Future<int> createItemType(ItemType account) async {
     final db = await database;
     return await db.insert('ItemType', account.toMap());
@@ -61,11 +65,13 @@ class DbProvider {
     return list;
   }
 
+
+// Item Table
   Future createItem(Item item) async {
     final db = await database;
     var accounts = await db.query(
       'Account',
-      where: "id = ? ",
+      where: "id = ?",
       whereArgs: [item.accountId],
     );
     var account = Account.fromMap(accounts[0]);
@@ -161,6 +167,7 @@ class DbProvider {
         "values(1, 'Checking', 59471, 0.00)");
     await db.execute("INSERT INTO Account (id, name, codePoint, balance) "
         "values(2, 'Saving', 59471, 0.00)");
+        
     await db.execute("INSERT INTO ItemType (id, name, codePoint) "
         "values(1, 'Paycheck', 59471)");
     await db.execute("INSERT INTO ItemType (id, name, codePoint) "

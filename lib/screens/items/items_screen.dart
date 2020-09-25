@@ -6,11 +6,11 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ItemsScreen extends StatelessWidget {
- static const routeName = '/items-screen';
+  static const routeName = '/items-screen';
   @override
   Widget build(BuildContext context) {
     var dbProvider = Provider.of<DbProvider>(context);
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: Text('Items Screen'),
         actions: [
@@ -20,14 +20,16 @@ class ItemsScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => ItemScreen(isDeposit: null,),
+                  builder: (_) => ItemScreen(
+                    isDeposit: null,
+                  ),
                 ),
               );
             },
           ),
         ],
       ),
-        body: FutureBuilder<List<Item>>(
+      body: FutureBuilder<List<Item>>(
         future: dbProvider.getAllItems(),
         builder: (_, snaptshot) {
           if (!snaptshot.hasData)
@@ -38,7 +40,7 @@ class ItemsScreen extends StatelessWidget {
             return Center(
               child: Text(snaptshot.error.toString()),
             );
-            var items =snaptshot.data;
+          var items = snaptshot.data;
           if (items.length == 0)
             return Center(
               child: const Text('No Records'),
@@ -48,18 +50,31 @@ class ItemsScreen extends StatelessWidget {
             itemCount: items.length,
             itemBuilder: (_, index) {
               var item = items[index];
-              return  ListTile(
-                    leading: Container(
-                      height: 30,
-                      width: 30,
-                      decoration: BoxDecoration(
-                        color: item.isDeposit ? Colors.green : Colors.red,
-                        borderRadius: BorderRadius.all(Radius.circular(100)),
-                      ),
+              return Dismissible(
+                key: ObjectKey(item.id),
+                confirmDismiss: (DismissDirection direction) async {
+                  if (direction == DismissDirection.endToStart) {
+                    await dbProvider.deleteItem(item);
+                    return true;
+                  }
+                  return false;
+                },
+                background: Container(
+                  color: Colors.red,
+                ),
+                child: ListTile(
+                  leading: Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      color: item.isDeposit ? Colors.green : Colors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
                     ),
-                    title: Text(item.description),
-                    trailing: Text('\$${formatter.format(item.amount)}'),
-                  );
+                  ),
+                  title: Text(item.description),
+                  trailing: Text('\$${formatter.format(item.amount)}'),
+                ),
+              );
             },
           );
         },

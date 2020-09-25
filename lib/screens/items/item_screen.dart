@@ -48,6 +48,7 @@ class _ItemScreenState extends State<ItemScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Item'),
+        centerTitle: true,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),
