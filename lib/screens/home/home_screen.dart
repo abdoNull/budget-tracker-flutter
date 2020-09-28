@@ -1,13 +1,64 @@
+import 'package:budget_tracker/database/db_provider.dart';
+import 'package:budget_tracker/models/balance.dart';
 import 'package:budget_tracker/screens/accounts/accounts_screen.dart';
 import 'package:budget_tracker/screens/home/widgets/menu.dart';
 import 'package:budget_tracker/screens/index.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const routeName = '/home-screen';
 
   @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  double _withdraw = 0;
+  double _deposit = 0;
+  double _wHeight = 0;
+  double _dHeight = 0;
+  double _balance = 0;
+
+  @override
+  void didChangeDependencies() async {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    var dbProvider = Provider.of<DbProvider>(context);
+    var balance = await dbProvider.getBalance();
+    _setHeightBalance(balance);
+  }
+
+  void _setHeightBalance(Balance balance) {
+    var maxAmount =
+        balance.withdraw > balance.deposit ? balance.withdraw : balance.deposit;
+    if (maxAmount == 0) {
+      setState(() {
+        _wHeight = 0;
+        _dHeight = 0;
+        _withdraw = 0;
+        _deposit = 0;
+        _balance = 0;
+      });
+      return;
+    }
+    var maxHeight = MediaQuery.of(context).size.height - 284;
+    var wHeight = (balance.withdraw / maxAmount) * maxHeight;
+    var dHeight = (balance.deposit / maxAmount) * maxHeight;
+    setState(() {
+      _wHeight = wHeight;
+      _dHeight = dHeight;
+      _withdraw = balance.withdraw;
+      _deposit = balance.deposit;
+      _balance = balance.total;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var formatter = NumberFormat("#,##0.00", "en_US");
+
     var amount = '1,203.00';
     return Scaffold(
       appBar: AppBar(
@@ -63,7 +114,7 @@ class HomeScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           _TotalBudget(
-            amount: amount,
+            amount: formatter.format(_balance),
           ),
           Container(
             padding: EdgeInsets.only(bottom: 50),
@@ -73,16 +124,16 @@ class HomeScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _BarLine(
-                  height: 100,
+                  height: _wHeight,
                   label: 'Withdraw',
                   color: Colors.red,
-                  amount: 506,
+                  amount: formatter.format(_deposit),
                 ),
                 _BarLine(
-                  height: 300,
+                  height: _dHeight,
                   label: 'Deposit',
                   color: Colors.teal,
-                  amount: 1709,
+                  amount: formatter.format(_deposit),
                 ),
               ],
             ),
@@ -91,7 +142,6 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-  // _BarLine
 }
 
 class _BarLine extends StatelessWidget {
@@ -106,7 +156,7 @@ class _BarLine extends StatelessWidget {
   final double height;
   final String label;
   final Color color;
-  final int amount;
+  final String amount;
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +170,7 @@ class _BarLine extends StatelessWidget {
           color: color,
         ),
         Text(label),
-        Text('\$$amount'),
+        Text(amount),
       ],
     );
   }

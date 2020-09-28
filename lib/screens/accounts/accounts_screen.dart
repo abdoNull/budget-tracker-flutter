@@ -27,7 +27,7 @@ class AccountsScreen extends StatelessWidget {
         ],
       ),
       body: FutureBuilder<List<Account>>(
-        future: dbProvider.getAllAccount(),
+        future: dbProvider.getAllAccounts(),
         builder: (_, snaptshot) {
           if (!snaptshot.hasData)
             return Center(

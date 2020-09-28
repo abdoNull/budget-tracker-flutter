@@ -32,8 +32,8 @@ class _ItemScreenState extends State<ItemScreen> {
 
   void _loadDropdownData() async {
     var dbProvider = Provider.of<DbProvider>(context);
-    var accounts = await dbProvider.getAllAccount(); // Change this to Plurale
-    var types = await dbProvider.getAllItemTypes();
+    var accounts = await dbProvider.getAllAccounts();
+    var types = await dbProvider.getAllTypes();
 
     if (!mounted) return;
 
@@ -48,7 +48,6 @@ class _ItemScreenState extends State<ItemScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Item'),
-        centerTitle: true,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save),

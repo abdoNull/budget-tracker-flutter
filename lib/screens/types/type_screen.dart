@@ -47,10 +47,9 @@ class _TypeScreenState extends State<TypeScreen> {
               _formKey.currentState.save();
               var type = ItemType.fromMap(_data);
               if (type.id == null)
-                await dbProvider.createItemType(type);
+                await dbProvider.createType(type);
               else
-                await dbProvider.updateItemType(type);
-
+                await dbProvider.updateType(type);
               Navigator.of(context).pop();
             },
           ),

@@ -7,6 +7,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DbProvider {
   Database _database;
+
   Future<Database> get database async {
     if (_database == null) {
       _database = await _initialize();
@@ -14,8 +15,23 @@ class DbProvider {
     return _database;
   }
 
+  Future<Balance> getBalance() async {
+    final items = await getAllItems();
+    double withdraw = 0;
+    double deposit = 0;
+    items.forEach((i) {
+      if (i.isDeposit)
+        deposit += i.amount;
+      else
+        withdraw += i.amount;
+    });
+    return Balance(
+      deposit: deposit,
+      withdraw: withdraw,
+      total: deposit - withdraw,
+    );
+  }
 
-// Account Table
   Future<int> createAccount(Account account) async {
     final db = await database;
     return await db.insert('Account', account.toMap());
@@ -23,63 +39,48 @@ class DbProvider {
 
   Future<int> updateAccount(Account account) async {
     final db = await database;
-    return await db.update(
-      'Account',
-      account.toMap(),
-      where: 'id = ?',
-      whereArgs: [account.id],
-    );
+    return await db.update('Account', account.toMap(),
+        where: 'id = ?', whereArgs: [account.id]);
   }
 
-  Future<List<Account>> getAllAccount() async {
+  Future<List<Account>> getAllAccounts() async {
     final db = await database;
-    var result = await db.query('Account');
+    var res = await db.query('Account');
     List<Account> list =
-        result.isNotEmpty ? result.map((a) => Account.fromMap(a)).toList() : [];
+        res.isNotEmpty ? res.map((a) => Account.fromMap(a)).toList() : [];
     return list;
   }
 
-
-// ItemType Table
-  Future<int> createItemType(ItemType account) async {
+  Future<int> createType(ItemType type) async {
     final db = await database;
-    return await db.insert('ItemType', account.toMap());
+    return await db.insert('ItemType', type.toMap());
   }
 
-  Future<int> updateItemType(ItemType itemType) async {
+  Future<int> updateType(ItemType type) async {
     final db = await database;
-    return await db.update(
-      'ItemType',
-      itemType.toMap(),
-      where: 'id = ?',
-      whereArgs: [itemType.id],
-    );
+    return await db.update('ItemType', type.toMap(),
+        where: "id = ?", whereArgs: [type.id]);
   }
 
-  Future<List<ItemType>> getAllItemTypes() async {
+  Future<List<ItemType>> getAllTypes() async {
     final db = await database;
-    var result = await db.query('Account');
-    List<ItemType> list = result.isNotEmpty
-        ? result.map((a) => ItemType.fromMap(a)).toList()
-        : [];
+    var res = await db.query('ItemType');
+    List<ItemType> list =
+        res.isNotEmpty ? res.map((t) => ItemType.fromMap(t)).toList() : [];
     return list;
   }
 
-
-// Item Table
   Future createItem(Item item) async {
     final db = await database;
-    var accounts = await db.query(
-      'Account',
-      where: "id = ?",
-      whereArgs: [item.accountId],
-    );
+    var accounts = await db
+        .query('Account', where: "id = ? ", whereArgs: [item.accountId]);
     var account = Account.fromMap(accounts[0]);
     var balance = account.balance;
+
     if (item.isDeposit)
       balance += item.amount;
     else
-      balance += item.amount;
+      balance -= item.amount;
 
     await db.transaction((txn) async {
       await txn.rawUpdate(
@@ -98,7 +99,7 @@ class DbProvider {
     return list;
   }
 
-   Future deleteItem(Item item) async {
+  Future deleteItem(Item item) async {
     final db = await database;
     var accounts =
         await db.query('Account', where: "id =?", whereArgs: [item.accountId]);
@@ -118,7 +119,6 @@ class DbProvider {
     });
   }
 
-
   void dispose() {
     _database?.close();
     _database = null;
@@ -126,7 +126,7 @@ class DbProvider {
 
   Future<Database> _initialize() async {
     Directory docDir = await getApplicationDocumentsDirectory();
-    String path = join(docDir.path, 'budget_tracker');
+    String path = join(docDir.path, 'spend_tracker.db');
     Database db = await openDatabase(
       path,
       version: 1,
@@ -135,10 +135,9 @@ class DbProvider {
       },
       onCreate: _onCreate,
     );
+
     return db;
   }
-
-
 
   void _onCreate(Database db, int version) async {
     await db.execute("CREATE TABLE Account ("
@@ -167,7 +166,6 @@ class DbProvider {
         "values(1, 'Checking', 59471, 0.00)");
     await db.execute("INSERT INTO Account (id, name, codePoint, balance) "
         "values(2, 'Saving', 59471, 0.00)");
-        
     await db.execute("INSERT INTO ItemType (id, name, codePoint) "
         "values(1, 'Paycheck', 59471)");
     await db.execute("INSERT INTO ItemType (id, name, codePoint) "
