@@ -53,11 +53,15 @@ class _ItemScreenState extends State<ItemScreen> {
             icon: Icon(Icons.save),
             onPressed: () {
               if (!_formKey.currentState.validate()) return;
+              print('object ----- 1');
               _formKey.currentState.save();
-              var dbProvider = Provider.of<DbProvider>(context);
+              print('object ----- 2');
+              var dbProvider = Provider.of<DbProvider>(context,listen: false);
               _formData['date'] = DateFormat('MM/dd/yyyy').format(_dateTime);
+              print('object ----- 3');
               var item = Item.fromMap(_formData);
               dbProvider.createItem(item);
+              print('object ----- 4');
               Navigator.of(context).pop();
             },
           )
