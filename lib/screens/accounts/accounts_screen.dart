@@ -48,7 +48,12 @@ class AccountsScreen extends StatelessWidget {
             itemBuilder: (_, index) {
               var account = snaptshot.data[index];
               return ListTile(
-                leading: Icon(account.iconData),
+                leading: Hero(
+                  tag: account.id,
+                  child: Icon(
+                    account.iconData,
+                  ),
+                ),
                 title: Text(account.name),
                 trailing: Text('\$${formatter.format(account.balance)}'),
                 onTap: () => Navigator.push(

@@ -21,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
   double _dHeight = 0;
   double _balance = 0;
 
+  double _opacity = 0.2;
+
   @override
   void didChangeDependencies() async {
     // TODO: implement didChangeDependencies
@@ -52,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _withdraw = balance.withdraw;
       _deposit = balance.deposit;
       _balance = balance.total;
+      _opacity = 1.0;
     });
   }
 
@@ -113,8 +116,12 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          _TotalBudget(
-            amount: formatter.format(_balance),
+          AnimatedOpacity(
+            opacity: _opacity,
+            duration: Duration(seconds: 4),
+            child: _TotalBudget(
+              amount: formatter.format(_balance),
+            ),
           ),
           Container(
             padding: EdgeInsets.only(bottom: 50),

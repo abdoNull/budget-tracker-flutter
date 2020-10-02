@@ -48,10 +48,10 @@ class _AccountScreenState extends State<AccountScreen> {
               var account = Account.fromMap(_data);
               if (account.id == null)
                 await dbProvider.createAccount(account);
-                
               else
                 await dbProvider.updateAccount(account);
-              print("Pass the Condiction");
+
+              print("Pass the Condition");
               Navigator.of(context).pop();
             },
           ),
@@ -65,6 +65,7 @@ class _AccountScreenState extends State<AccountScreen> {
             children: <Widget>[
               //   IconHolder(newIcon: _newIcon),
               IconHolder(
+                tagId : widget.account == null? 0:widget.account.id,
                 newIcon: IconHelper.createIconData(_data['codePoint']),
                 onIconChange: (IconData iconData) =>
                     setState(() => _data['codePoint'] = iconData.codePoint),
